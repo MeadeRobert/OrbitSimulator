@@ -92,13 +92,16 @@ void setup()
   System.out.println("Node Vector: " + nodeVector);
   
   PVector eccentricityVector = new PVector();
-  eccentricityVector.set(radius);
-  eccentricityVector.mult(b2.velocity.mag()*b2.velocity.mag()-mu/radius.mag());
-  temp.set(radius);
-  temp.cross(b2.velocity);
-  temp.mult(b2.velocity.mag());
-  eccentricityVector.sub(temp);
+  eccentricityVector.set(b2.velocity);
+  eccentricityVector.cross(angularMomentum);
   eccentricityVector.div(mu);
+  //eccentricityVector.set(radius);
+  //eccentricityVector.mult(b2.velocity.mag()*b2.velocity.mag()-mu/radius.mag());
+  //temp.set(radius);
+  //temp.cross(b2.velocity);
+  //temp.mult(b2.velocity.mag());
+  //eccentricityVector.sub(temp);
+  //eccentricityVector.div(mu);
   System.out.println("Eccentricity Vector: " + eccentricityVector);
   
   float eccentricity = eccentricityVector.mag();
@@ -129,15 +132,11 @@ void setup()
     float r = semiLactusRectum / (1.0f + eccentricity * cos (angle));
     point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
   }
-  
-  
-  //b1.applyForce(new PVector(5,0));
+
 }
 
 void draw()
 {
-  //b2.applyForce(b2.gravitationalForceFrom(b1));
-  //b1.applyForce(b1.gravitationalForceFrom(b2));
   fill(0, 255, 0);
   b1.draw();
   fill(255, 0, 0);

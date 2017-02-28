@@ -1,21 +1,27 @@
+import processing.core.*;
+
+public static final float GRAVITATIONAL_CONSTANT = 6.67e-11;
+
 class Body
 {
-  public static final float GRAVITATIONAL_CONSTANT = 1.0f; //6.67e-11
-  
-  PVector position, velocity, acceleration;
+  PVector position;
+  PVector velocity;
+  PVector acceleration;
   float mass;
   
   public Body(PVector position, PVector velocity, PVector acceleration, float mass)
   {
-    this.position = position.copy();
-    this.velocity = velocity.copy();
-    this.acceleration = acceleration.copy();
+    this.position = new PVector().set(position);
+    this.velocity = new PVector().set(velocity);
+    this.acceleration = new PVector().set(acceleration);
     this.mass = mass;
   }
   
   public void applyForce(PVector force)
   {
-    acceleration.add(force.div(mass));
+    PVector appliedAcceleration = new PVector().set(force);
+    appliedAcceleration.div(mass);
+    acceleration.add(appliedAcceleration);
   }
   
   public void draw()
@@ -30,21 +36,24 @@ class Body
     // use a modified euler's method with average change over interval
     // => correct result for constant acceleration systems
     System.out.println(position);
-    position = position.add(velocity.mult(time));
+    PVector dist = new PVector().set(velocity);
+    dist.mult(time);
+    position.add(dist);
     System.out.println(position);
     
     //zero acc for next tick
-    velocity = velocity.add(acceleration);
+    velocity.add(acceleration);
     acceleration = new PVector(0,0);
   }
   
   public PVector gravitationalForceFrom(Body other)
   {
-    PVector unitDirection = other.position.copy().sub(this.position);
+    PVector unitDirection = other.position;
+    unitDirection.sub(this.position);
     float dist = unitDirection.mag();
-    unitDirection = unitDirection.normalize();
-    
-    return unitDirection.mult((mass*other.mass*GRAVITATIONAL_CONSTANT)/(dist*dist));
+    unitDirection.normalize();
+    unitDirection.mult((mass*other.mass*GRAVITATIONAL_CONSTANT)/(dist*dist));
+    return unitDirection;
   }
 }
 
@@ -59,15 +68,54 @@ Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(0,1/
 
 void setup()
 {
-  size(800,600);
+  PVector temp = new PVector();
+  size(800, 600);
   background(155);
+  
+  float mu = GRAVITATIONAL_CONSTANT * b1.mass;
+  
+  PVector radius = new PVector().set(b2.position);
+  radius.sub(b1.position);
+  
+  PVector angularMomentum = b2.velocity;
+  angularMomentum.cross(radius);
+  
+  PVector nodeVector = new PVector(0, 0, 1);
+  nodeVector.cross(angularMomentum);
+  
+  PVector eccentricityVector = new PVector().set(radius);
+  eccentricityVector.mult(b2.velocity.mag()*b2.velocity.mag()-mu/radius.mag());
+  temp.set(radius);
+  temp.cross(b2.velocity);
+  temp.mult(b2.velocity.mag());
+  eccentricityVector.sub(temp);
+  eccentricityVector.div(mu);
+  
+  float eccentricity = eccentricityVector.mag();
+  
+  float specificMechanicalEnergy = b2.velocity.mag() * b2.velocity.mag() / 2 - mu / radius.mag();
+  
+  float semiMajorAxis = -mu / 2 / specificMechanicalEnergy;
+  
+  float semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
+  
+  float i = acos(angularMomentum.z/angularMomentum.mag());
+  float bigOmega = acos(nodeVector.x/nodeVector.mag());
+  temp = nodeVector; temp.cross(eccentricityVector);
+  float littleOmega = acos(temp.mag()/(nodeVector.mag() * eccentricity));
+  temp = radius; temp.cross(eccentricityVector);
+  float trueAnomyly = acos(temp.mag()/(eccentricity * radius.mag()));
+  
+  
+  
+  
   //b1.applyForce(new PVector(5,0));
 }
 
 void draw()
 {
-  b2.applyForce(b2.gravitationalForceFrom(b1));
-  b1.applyForce(b1.gravitationalForceFrom(b2));
+  //b2.applyForce(b2.gravitationalForceFrom(b1));
+  //b1.applyForce(b1.gravitationalForceFrom(b2));
   b1.update(1f);
   b2.update(1f);
   b1.draw();

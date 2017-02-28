@@ -1,6 +1,6 @@
 import processing.core.*;
 
-public static final float GRAVITATIONAL_CONSTANT = 6.67e-11;
+public static final float GRAVITATIONAL_CONSTANT = 1.0;//6.67e-11;
 
 class Body
 {
@@ -11,15 +11,16 @@ class Body
   
   public Body(PVector position, PVector velocity, PVector acceleration, float mass)
   {
-    this.position = new PVector().set(position);
-    this.velocity = new PVector().set(velocity);
-    this.acceleration = new PVector().set(acceleration);
+    this.position = new PVector(); this.position.set(position);
+    this.velocity = new PVector(); this.velocity.set(velocity);
+    this.acceleration = new PVector(); this.acceleration.set(acceleration);
     this.mass = mass;
   }
   
   public void applyForce(PVector force)
   {
-    PVector appliedAcceleration = new PVector().set(force);
+    PVector appliedAcceleration = new PVector();
+    appliedAcceleration.set(force);
     appliedAcceleration.div(mass);
     acceleration.add(appliedAcceleration);
   }
@@ -36,7 +37,8 @@ class Body
     // use a modified euler's method with average change over interval
     // => correct result for constant acceleration systems
     System.out.println(position);
-    PVector dist = new PVector().set(velocity);
+    PVector dist = new PVector();
+    dist.set(velocity);
     dist.mult(time);
     position.add(dist);
     System.out.println(position);
@@ -72,32 +74,44 @@ void setup()
   size(800, 600);
   background(155);
   
+  // Calculate orbital elements
+  
   float mu = GRAVITATIONAL_CONSTANT * b1.mass;
   
-  PVector radius = new PVector().set(b2.position);
+  PVector radius = new PVector();
+  radius.set(b2.position);
   radius.sub(b1.position);
+  System.out.println("Radius: " + radius);
   
   PVector angularMomentum = b2.velocity;
   angularMomentum.cross(radius);
+  System.out.println("Angular Momentum: " + angularMomentum);
   
   PVector nodeVector = new PVector(0, 0, 1);
   nodeVector.cross(angularMomentum);
+  System.out.println("Node Vector: " + nodeVector);
   
-  PVector eccentricityVector = new PVector().set(radius);
+  PVector eccentricityVector = new PVector();
+  eccentricityVector.set(radius);
   eccentricityVector.mult(b2.velocity.mag()*b2.velocity.mag()-mu/radius.mag());
   temp.set(radius);
   temp.cross(b2.velocity);
   temp.mult(b2.velocity.mag());
   eccentricityVector.sub(temp);
   eccentricityVector.div(mu);
+  System.out.println("Eccentricity Vector: " + eccentricityVector);
   
   float eccentricity = eccentricityVector.mag();
+  System.out.println("Eccentricity: " + eccentricity);
   
   float specificMechanicalEnergy = b2.velocity.mag() * b2.velocity.mag() / 2 - mu / radius.mag();
+  System.out.println("Specific Mechanical Energy: " + specificMechanicalEnergy);
   
   float semiMajorAxis = -mu / 2 / specificMechanicalEnergy;
+  System.out.println("Semi-Major Axis: " + semiMajorAxis);
   
   float semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
+  System.out.println("Semi-Lactus Rectum: " + semiLactusRectum);
   
   float i = acos(angularMomentum.z/angularMomentum.mag());
   float bigOmega = acos(nodeVector.x/nodeVector.mag());
@@ -107,6 +121,14 @@ void setup()
   float trueAnomyly = acos(temp.mag()/(eccentricity * radius.mag()));
   
   
+  // plot path
+  color(0); stroke(0);
+  for(int j = 0; j < 360; j++)
+  {
+    float angle = (float) j / (2.0f * PI);
+    float r = semiLactusRectum / (1.0f + eccentricity * cos (angle));
+    point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
+  }
   
   
   //b1.applyForce(new PVector(5,0));
@@ -116,9 +138,9 @@ void draw()
 {
   //b2.applyForce(b2.gravitationalForceFrom(b1));
   //b1.applyForce(b1.gravitationalForceFrom(b2));
-  b1.update(1f);
-  b2.update(1f);
+  fill(0, 255, 0);
   b1.draw();
+  fill(255, 0, 0);
   b2.draw();
   
 }

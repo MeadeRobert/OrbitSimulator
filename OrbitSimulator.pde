@@ -66,7 +66,7 @@ int width = 800;
 int height = 400;
 
 Body b1 = new Body(new PVector(.5f * width, .5f * height), new PVector(0,0,0), new PVector(0,0,0), 10000.0f);
-Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(0,30,0), new PVector(0,0,0), 1.0f);
+Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(0,40,0), new PVector(0,0,0), 1.0f);
 
 void setup()
 {
@@ -136,14 +136,20 @@ void setup()
   float trueAnomaly = atan2(eccentricityVector.y, eccentricityVector.x);
   System.out.println("True Anomaly: " + trueAnomaly);
   
+  float eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin (trueAnomaly) / (eccentricity + cos(trueAnomaly)));
+  System.out.println("Eccentric Anomaly: " + eccentricAnomaly);
+  
+  float meanAnomaly = eccentricAnomaly - eccentricity * sin (eccentricAnomaly);
+  System.out.println("Mean Anomaly: " + meanAnomaly);
+  
   
   // plot path
   color(0); stroke(0);
-  for(int j = 0; j < 360; j++)
+  for(int j = 0; j < 720; j++)
   {
-    float angle = (float) j / (2.0f * PI);
+    float angle = (float) j / (4.0f * PI);
     float r = semiLactusRectum / (1.0f + eccentricity * cos (angle));
-    point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
+    point(r * cos(angle + trueAnomaly) + b1.position.x, r * sin(angle + trueAnomaly) + b1.position.y);
   }
 
 }

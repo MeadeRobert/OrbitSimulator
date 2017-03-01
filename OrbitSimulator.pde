@@ -115,16 +115,16 @@ void calculateInitialOrbitalElements()
   trueAnomaly = atan2(eccentricityVector.y, eccentricityVector.x);
   initialTrueAnomaly = trueAnomaly;
   
-  eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin (trueAnomaly) / (eccentricity + cos(trueAnomaly)));
+  eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly) / (eccentricity + cos(trueAnomaly)));
   initialEccentricAnomaly = eccentricAnomaly;
   
-  meanAnomaly = eccentricAnomaly - eccentricity * sin (eccentricAnomaly);
+  meanAnomaly = eccentricAnomaly - eccentricity * sin(eccentricAnomaly);
   initialMeanAnomaly = meanAnomaly;
   
-  radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin (trueAnomaly);
+  radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin(trueAnomaly);
   initialRadialVelocity = radialVelocity;
   
-  tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
+  tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly));
   initialTangentialVelocity = tangentialVelocity;
   
   radius.cross(b2.velocity, temp);
@@ -162,12 +162,12 @@ void updateOrbit(float deltaTime, int iterations)
   b2.position.set(b1.position);
   b2.position.add(radius);
   
-  // solve for velocity vector and update
-  //b2.velocity.set(-sqrt(mu/semiLactusRectum)*sin(trueAnomaly)*cos(initialTrueAnomaly), sqrt(mu/semiLactusRectum)*(eccentricity + cos(trueAnomaly))*sin(initialTrueAnomaly));
-  
   // update other orbital params
   radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin (trueAnomaly);
   tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
+  
+  float speed = sqrt(radialVelocity * radialVelocity + tangentialVelocity * tangentialVelocity);
+  b2.velocity.set(-direction * speed * sin(trueAnomaly - initialTrueAnomaly), direction * speed * cos (trueAnomaly - initialTrueAnomaly));
   
   eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
   eccentricityVector.cross(angularMomentum, eccentricityVector);
@@ -212,6 +212,5 @@ void draw()
   printOrbitalElements();
   plotOrbitalPath();
   updateOrbit(.1f, 2);
-  delay(500);
-  
+  delay(12);
 }

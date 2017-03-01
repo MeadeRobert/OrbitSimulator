@@ -68,11 +68,10 @@ int signum(float f) {
 // app core
 // -----------------
 
-int width = 800;
-int height = 400;
+//int width = 1024;
+//int height = 768;
 
-Body b1 = new Body(new PVector(.5f * width, .5f * height), new PVector(0,0,0), new PVector(0,0,0), 10000.0f);
-Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(0,-25,0), new PVector(0,0,0), 1.0f);
+Body b1, b2;
 
 PVector temp = new PVector();
 
@@ -191,13 +190,33 @@ void printOrbitalElements()
   System.out.println("Tangential Velocity: " + tangentialVelocity);
   System.out.println("Radial Velocity: " + radialVelocity);
   System.out.println("Satellite Velocity Vector: " + b2.velocity);
+  System.out.println("Satellite Speed: " + b2.velocity.mag());
 }
   
+void overlayOrbitInfo()
+{
+  textSize(14);
+  text("mu: " + mu, width - width / 3, height / 16);
+  text("Radius: " + radius, width - width / 3, height / 16 * 2);
+  text("Angular Momentum: " + angularMomentum, width - width / 3, height / 16 * 3);
+  text("Eccentricity Vector: " + eccentricityVector, width - width / 3, height / 16 * 4);
+  text("Eccentricity: " + eccentricity, width - width / 3, height / 16 * 5);
+  text("Semi-Major Axis: " + semiMajorAxis, width - width / 3, height / 16 * 6);
+  text("Semi-Lactus Rectum: " + semiLactusRectum, width - width / 3, height / 16 * 7);
+  text("True Anomaly: " + trueAnomaly, width - width / 3, height / 16 * 8);
+  text("Mean Anomaly: " + meanAnomaly, width - width / 3, height / 16 * 9);
+  text("Radial Velocity: " + radialVelocity, width - width / 3, height / 16 * 10);
+  text("Satellite Velocity Vector: " + b2.velocity, width - width / 3, height / 16 * 11);
+  text("Satellite Speed: " + b2.velocity.mag(), width - width / 3, height / 16 * 12);
+}
+
 
 void setup()
 {
   background(155);
-  size(800, 600);
+  size(1024, 768);
+  b1 = new Body(new PVector(.5f * width, .5f * height), new PVector(0,0,0), new PVector(0,0,0), 50000.0f);
+  b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(40,55,0), new PVector(0,0,0), 1.0f);
   calculateInitialOrbitalElements();
 }
 
@@ -205,11 +224,14 @@ void draw()
 {
   background(155);
   fill(0, 255, 0);
+  stroke(0, 255, 0);
   b1.draw();
   fill(255, 0, 0);
+  stroke(255, 0, 0);
   b2.draw();
   
   printOrbitalElements();
+  overlayOrbitInfo();
   plotOrbitalPath();
   updateOrbit(.1f, 2);
   delay(12);

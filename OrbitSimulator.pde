@@ -66,99 +66,144 @@ int width = 800;
 int height = 400;
 
 Body b1 = new Body(new PVector(.5f * width, .5f * height), new PVector(0,0,0), new PVector(0,0,0), 10000.0f);
-Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(0,40,0), new PVector(0,0,0), 1.0f);
+Body b2 = new Body(new PVector(.5f * width + 20, .5f * height), new PVector(10,25,0), new PVector(0,0,0), 1.0f);
 
-void setup()
+PVector temp = new PVector();
+PVector radius = new PVector();
+PVector angularMomentum = new PVector();
+PVector eccentricityVector = new PVector();
+float mu, eccentricity, semiMajorAxis, semiLactusRectum, trueAnomaly, initialTrueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity;
+
+
+void calculateOrbitalElements()
 {
-
-  
-  PVector temp = new PVector();
-  temp.set(1, 0, 0);
-  temp.cross(new PVector(0, 1, 0), temp);
-  System.out.println(temp);
-  size(800, 600);
-  background(155);
-  
   // Calculate orbital elements 
-  float mu = GRAVITATIONAL_CONSTANT * b1.mass;
+  mu = GRAVITATIONAL_CONSTANT * b1.mass;
   System.out.println("mu: " + mu);
   
-  PVector radius = new PVector();
   radius.set(b2.position);
   radius.sub(b1.position);
   System.out.println("Radius: " + radius);
   
-  PVector angularMomentum = new PVector();
   angularMomentum.set(radius);
   angularMomentum.cross(b2.velocity, angularMomentum);
   System.out.println("Angular Momentum: " + angularMomentum);
   
-  //PVector nodeVector = new PVector(0, 0, 1);
-  //nodeVector.cross(angularMomentum);
-  //System.out.println("Node Vector: " + nodeVector);
-  
-  PVector eccentricityVector = new PVector();
-  //System.out.println("Eccentricity Vector: " + eccentricityVector);
-  eccentricityVector.set(b2.velocity);
-  //System.out.println("Eccentricity Vector: " + eccentricityVector);
+  eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
   eccentricityVector.cross(angularMomentum, eccentricityVector);
-  //System.out.println("Eccentricity Vector: " + eccentricityVector);
   eccentricityVector.div(mu);
-  temp.set(radius);
-  temp.normalize();
+  temp.set(radius); temp.normalize();
   eccentricityVector.sub(temp);
-  //eccentricityVector.set(radius);
-  //eccentricityVector.mult(b2.velocity.mag()*b2.velocity.mag()-mu/radius.mag());
-  //temp.set(radius);
-  //temp.cross(b2.velocity);
-  //temp.mult(b2.velocity.mag());
-  //eccentricityVector.sub(temp);
-  //eccentricityVector.div(mu);
   System.out.println("Eccentricity Vector: " + eccentricityVector);
   
-  float eccentricity = eccentricityVector.mag();
+  eccentricity = eccentricityVector.mag();
   System.out.println("Eccentricity: " + eccentricity);
   
-  //float specificMechanicalEnergy = b2.velocity.mag() * b2.velocity.mag() / 2 - mu / radius.mag();
-  //System.out.println("Specific Mechanical Energy: " + specificMechanicalEnergy);
-  
-  float semiMajorAxis = angularMomentum.mag() * angularMomentum.mag() / (mu * (1 - eccentricity * eccentricity));
-  //float semiMajorAxis = -mu / 2 / specificMechanicalEnergy;
+  semiMajorAxis = angularMomentum.mag() * angularMomentum.mag() / (mu * (1 - eccentricity * eccentricity));
   System.out.println("Semi-Major Axis: " + semiMajorAxis);
   
-  float semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
+  semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
   System.out.println("Semi-Lactus Rectum: " + semiLactusRectum);
   
-  //float i = acos(angularMomentum.z/angularMomentum.mag());
-  //float bigOmega = acos(nodeVector.x/nodeVector.mag());
-  //temp = nodeVector; temp.cross(eccentricityVector);
-  //float littleOmega = acos(temp.mag()/(nodeVector.mag() * eccentricity));
-  float trueAnomaly = atan2(eccentricityVector.y, eccentricityVector.x);
+  trueAnomaly = atan2(eccentricityVector.y, eccentricityVector.x);
+  initialTrueAnomaly = trueAnomaly;
   System.out.println("True Anomaly: " + trueAnomaly);
   
-  float eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin (trueAnomaly) / (eccentricity + cos(trueAnomaly)));
+  eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin (trueAnomaly) / (eccentricity + cos(trueAnomaly)));
   System.out.println("Eccentric Anomaly: " + eccentricAnomaly);
   
-  float meanAnomaly = eccentricAnomaly - eccentricity * sin (eccentricAnomaly);
+  meanAnomaly = eccentricAnomaly - eccentricity * sin (eccentricAnomaly);
   System.out.println("Mean Anomaly: " + meanAnomaly);
   
+  tangentialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin (trueAnomaly);
+  System.out.println("Tangential Velocity: " + tangentialVelocity);
   
-  // plot path
-  color(0); stroke(0);
-  for(int j = 0; j < 720; j++)
-  {
-    float angle = (float) j / (4.0f * PI);
-    float r = semiLactusRectum / (1.0f + eccentricity * cos (angle));
-    point(r * cos(angle + trueAnomaly) + b1.position.x, r * sin(angle + trueAnomaly) + b1.position.y);
-  }
+  radialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
+  System.out.println("Radial Velocity: " + radialVelocity);
+}
 
+
+void plotOrbitalPath()
+{
+   // plot path
+  color(0); stroke(0);
+  for(int j = 0; j < 360*8; j++)
+  {
+    float angle = (float) j / (16.0f * PI);
+    float r = semiLactusRectum / (1.0f + eccentricity * cos (angle + trueAnomaly));
+    point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
+  }
+}
+
+void updateSatellite(float deltaTime, int iterations)
+{
+  // calculate next meanAnomaly
+  float nextMeanAnomaly = deltaTime * sqrt(GRAVITATIONAL_CONSTANT * (b1.mass + b2.mass) / pow(semiMajorAxis,3)) + meanAnomaly;
+  meanAnomaly = nextMeanAnomaly;
+  float nextEccentricAnomaly = eccentricAnomaly;
+  
+  //System.out.println(nextEccentricAnomaly);
+  // use newton's method to solve for the eccentric anomaly at this time
+  for(int i = 0; i < iterations; i++)
+  {
+    nextEccentricAnomaly = nextEccentricAnomaly - (nextEccentricAnomaly - eccentricity * sin (nextEccentricAnomaly) - nextMeanAnomaly) / (1 - eccentricity * cos(nextEccentricAnomaly));
+    //System.out.println(nextEccentricAnomaly);
+  }
+  eccentricAnomaly = nextEccentricAnomaly;
+  
+  
+  // solve for the radius vector and update position
+  float old_radius = -mu / radius.mag();
+  trueAnomaly = 2.0f * atan2(sqrt(1 + eccentricity) * sin (eccentricAnomaly / 2.0f), sqrt(1 - eccentricity) * cos(eccentricAnomaly / 2.0f));
+  float r = semiLactusRectum / (1.0f + eccentricity * cos (trueAnomaly));
+  radius.set(r*cos(trueAnomaly - initialTrueAnomaly), r*sin(trueAnomaly - initialTrueAnomaly));
+  b2.position.set(b1.position);
+  b2.position.add(radius);
+  
+  // solve for velocity vector and update
+  b2.velocity.set(-sqrt(mu/semiLactusRectum)*sin(trueAnomaly-initialTrueAnomaly), -sqrt(mu/semiLactusRectum)*(eccentricity + cos(trueAnomaly-initialTrueAnomaly)));
+  System.out.println(b2.velocity);
+  System.out.println(b2.velocity.mag());
+}
+
+void printOrbitalElements()
+{
+  System.out.println("mu: " + mu);
+  System.out.println("Radius: " + radius);
+  System.out.println("Angular Momentum: " + angularMomentum);
+  System.out.println("Eccentricity Vector: " + eccentricityVector);
+  System.out.println("Eccentricity: " + eccentricity);
+  System.out.println("Semi-Major Axis: " + semiMajorAxis);
+  System.out.println("Semi-Lactus Rectum: " + semiLactusRectum);
+  System.out.println("True Anomaly: " + trueAnomaly);
+  System.out.println("Eccentric Anomaly: " + eccentricAnomaly);
+  System.out.println("Mean Anomaly: " + meanAnomaly);
+  System.out.println("Tangential Velocity: " + tangentialVelocity);
+  System.out.println("Radial Velocity: " + radialVelocity);
+  System.out.println("Satellite Velocity Vector: " + b2.velocity);
+}
+  
+
+void setup()
+{
+  background(155);
+  size(800, 600);
+  calculateOrbitalElements();
+  plotOrbitalPath();
 }
 
 void draw()
 {
+  
   fill(0, 255, 0);
   b1.draw();
   fill(255, 0, 0);
   b2.draw();
+  
+  printOrbitalElements();
+  calculateOrbitalElements();
+  plotOrbitalPath();
+  updateSatellite(.01f, 15); 
+  delay(100);
   
 }

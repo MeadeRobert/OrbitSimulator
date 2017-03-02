@@ -17,7 +17,7 @@ class Orbit
   PVector eccentricityVector = new PVector();
   PVector initialSatelliteVelocity = new PVector();
   PVector initialRadius = new PVector();
-  float initialTrueAnomaly, initialEccentricAnomaly, initialMeanAnomaly, initialTangentialVelocity, initialRadialVelocity, direction;
+  float argumentOfPeriapsis, initialEccentricAnomaly, initialMeanAnomaly, initialTangentialVelocity, initialRadialVelocity, direction;
 
   // changing orbital elements
   PVector radius = new PVector();
@@ -31,6 +31,9 @@ class Orbit
   
     radius.set(b2.position);
     radius.sub(b1.position);
+    
+    radius.cross(b2.velocity, temp);
+    direction = signum(temp.z);
   
     angularMomentum.set(radius);
     angularMomentum.cross(b2.velocity, angularMomentum);
@@ -47,10 +50,11 @@ class Orbit
   
     semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
   
-    trueAnomaly = atan2(eccentricityVector.y, eccentricityVector.x);
-    initialTrueAnomaly = trueAnomaly;
+    argumentOfPeriapsis = atan2(eccentricityVector.y, eccentricityVector.x);
     
-    eccentricAnomaly = atan(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly) / (eccentricity + cos(trueAnomaly)));
+    trueAnomaly = direction * acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
+    
+    eccentricAnomaly = atan2(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly), (eccentricity + cos(trueAnomaly)));
     initialEccentricAnomaly = eccentricAnomaly;
   
     meanAnomaly = eccentricAnomaly - eccentricity * sin(eccentricAnomaly);
@@ -62,8 +66,7 @@ class Orbit
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly));
     initialTangentialVelocity = tangentialVelocity;
   
-    radius.cross(b2.velocity, temp);
-    direction = signum(temp.z);
+    
   }
 
   void plotOrbitalPath()
@@ -72,7 +75,7 @@ class Orbit
     for(int j = 0; j < 360*8; j++)
     {
       float angle = (float) j / (16.0f * PI);
-      float r = semiLactusRectum / (1.0f + eccentricity * cos (angle + initialTrueAnomaly));
+      float r = semiLactusRectum / (1.0f + eccentricity * cos (angle - argumentOfPeriapsis));
       point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
     }
   }
@@ -91,9 +94,11 @@ class Orbit
     }  
   
     // solve for the radius vector and update position
+    System.out.println(trueAnomaly);
     trueAnomaly = 2.0f * atan2(sqrt(1 + eccentricity) * sin (eccentricAnomaly / 2.0f), sqrt(1 - eccentricity) * cos(eccentricAnomaly / 2.0f));
+    System.out.println(trueAnomaly);
     float r = semiLactusRectum / (1.0f + eccentricity * cos (trueAnomaly));
-    radius.set(r*cos(trueAnomaly - initialTrueAnomaly), r*sin(trueAnomaly - initialTrueAnomaly));
+    radius.set(r*cos(trueAnomaly + argumentOfPeriapsis), r*sin(trueAnomaly + argumentOfPeriapsis));
     b2.position.set(b1.position);
     b2.position.add(radius);
   
@@ -102,7 +107,7 @@ class Orbit
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
   
     float speed = sqrt(radialVelocity * radialVelocity + tangentialVelocity * tangentialVelocity);
-    b2.velocity.set(-direction * speed * sin(trueAnomaly - initialTrueAnomaly), direction * speed * cos (trueAnomaly - initialTrueAnomaly));
+    b2.velocity.set(-direction * speed * sin(trueAnomaly - argumentOfPeriapsis), direction * speed * cos (trueAnomaly - argumentOfPeriapsis));
   
     eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
     eccentricityVector.cross(angularMomentum, eccentricityVector);
@@ -141,9 +146,10 @@ class Orbit
     text("Semi-Lactus Rectum: " + semiLactusRectum, width - width / 3, height / 16 * 7);
     text("True Anomaly: " + trueAnomaly, width - width / 3, height / 16 * 8);
     text("Mean Anomaly: " + meanAnomaly, width - width / 3, height / 16 * 9);
-    text("Radial Velocity: " + radialVelocity, width - width / 3, height / 16 * 10);
-    text("Satellite Velocity Vector: " + b2.velocity, width - width / 3, height / 16 * 11);
-    text("Satellite Speed: " + b2.velocity.mag(), width - width / 3, height / 16 * 12);
+    text("Eccentric Anomaly: " + eccentricAnomaly, width - width / 3, height / 16 * 10);
+    text("Radial Velocity: " + radialVelocity, width - width / 3, height / 16 * 11);
+    text("Satellite Velocity Vector: " + b2.velocity, width - width / 3, height / 16 * 12);
+    text("Satellite Speed: " + b2.velocity.mag(), width - width / 3, height / 16 * 13);
   }
   
   void draw()

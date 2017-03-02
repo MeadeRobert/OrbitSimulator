@@ -58,14 +58,14 @@ void setup()
          .setValue(b2.position.x,b2.position.y);
          
   cp5.addToggle("startStop")
-     .setPosition(40,250)
+     .setPosition(100,250)
      .setSize(50,20)
      .setValue(false)
      .setMode(ControlP5.SWITCH)
      ;
      
   cp5.addToggle("recalculate")
-     .setPosition(100,250)
+     .setPosition(300,250)
      .setSize(50,20)
      .setValue(false)
      .setMode(ControlP5.SWITCH)

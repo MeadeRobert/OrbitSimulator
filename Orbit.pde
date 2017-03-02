@@ -82,7 +82,7 @@ class Orbit
   void update(float deltaTime, int iterations)
   {
     // calculate next meanAnomaly
-    meanAnomaly = direction * deltaTime * sqrt(gravitationalConstant * (b1.mass + b2.mass) / pow(semiMajorAxis,3)) + meanAnomaly;
+    meanAnomaly = (direction * deltaTime * sqrt(gravitationalConstant * (b1.mass + b2.mass) / pow(semiMajorAxis,3)) + meanAnomaly) % (2.0f * PI);
   
     //System.out.println(nextEccentricAnomaly);
     // use newton's method to solve for the eccentric anomaly at this time

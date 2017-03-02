@@ -32,10 +32,10 @@ class Orbit
     radius.set(b2.position);
     radius.sub(b1.position);
     
-    direction = signum(b2.velocity.x) < .1 ? signum(b2.velocity.y) : signum(b2.velocity.x);
-  
     angularMomentum.set(radius);
     angularMomentum.cross(b2.velocity, angularMomentum);
+    
+    direction = signum(angularMomentum.z);
   
     eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
     eccentricityVector.cross(angularMomentum, eccentricityVector);
@@ -51,7 +51,7 @@ class Orbit
   
     argumentOfPeriapsis = atan2(eccentricityVector.y, eccentricityVector.x);
     
-    trueAnomaly = acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
+    trueAnomaly = signum(eccentricityVector.cross(radius).z) * acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
     
     eccentricAnomaly = atan2(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly), (eccentricity + cos(trueAnomaly)));
     initialEccentricAnomaly = eccentricAnomaly;
@@ -63,9 +63,7 @@ class Orbit
     initialRadialVelocity = radialVelocity;
   
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly));
-    initialTangentialVelocity = tangentialVelocity;
-  
-    
+    initialTangentialVelocity = tangentialVelocity; 
   }
 
   void plotOrbitalPath()
@@ -84,7 +82,6 @@ class Orbit
     // calculate next meanAnomaly
     meanAnomaly = (direction * deltaTime * sqrt(gravitationalConstant * (b1.mass + b2.mass) / pow(semiMajorAxis,3)) + meanAnomaly) % (2.0f * PI);
   
-    //System.out.println(nextEccentricAnomaly);
     // use newton's method to solve for the eccentric anomaly at this time
     for(int i = 0; i < iterations; i++)
     {
@@ -93,9 +90,7 @@ class Orbit
     }  
   
     // solve for the radius vector and update position
-    System.out.println(trueAnomaly);
     trueAnomaly = 2.0f * atan2(sqrt(1 + eccentricity) * sin (eccentricAnomaly / 2.0f), sqrt(1 - eccentricity) * cos(eccentricAnomaly / 2.0f));
-    System.out.println(trueAnomaly);
     float r = semiLactusRectum / (1.0f + eccentricity * cos (trueAnomaly));
     radius.set(r*cos(trueAnomaly + argumentOfPeriapsis), r*sin(trueAnomaly + argumentOfPeriapsis));
     b2.position.set(b1.position);

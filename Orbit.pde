@@ -32,8 +32,7 @@ class Orbit
     radius.set(b2.position);
     radius.sub(b1.position);
     
-    radius.cross(b2.velocity, temp);
-    direction = signum(temp.z);
+    direction = signum(b2.velocity.x) < .1 ? signum(b2.velocity.y) : signum(b2.velocity.x);
   
     angularMomentum.set(radius);
     angularMomentum.cross(b2.velocity, angularMomentum);
@@ -52,7 +51,7 @@ class Orbit
   
     argumentOfPeriapsis = atan2(eccentricityVector.y, eccentricityVector.x);
     
-    trueAnomaly = direction * acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
+    trueAnomaly = acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
     
     eccentricAnomaly = atan2(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly), (eccentricity + cos(trueAnomaly)));
     initialEccentricAnomaly = eccentricAnomaly;

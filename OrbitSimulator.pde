@@ -23,7 +23,7 @@ int b2Mass = 1;
 Slider2D b2Velocity;
 Slider2D b2Position;
 boolean startStop = false;
-
+boolean recalculate = false;
 
 
 void setup()
@@ -63,6 +63,13 @@ void setup()
      .setValue(false)
      .setMode(ControlP5.SWITCH)
      ;
+     
+  cp5.addToggle("recalculate")
+     .setPosition(100,250)
+     .setSize(50,20)
+     .setValue(false)
+     .setMode(ControlP5.SWITCH)
+     ;
 }
 
 void draw()
@@ -84,7 +91,7 @@ void draw()
     //b2.mass = b2Mass;
     b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
     b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
-    orbit.calculateInitialOrbitalElements();
+    if(recalculate) orbit.calculateInitialOrbitalElements();
     orbit.overlayOrbitInfo();
     orbit.draw();
   }

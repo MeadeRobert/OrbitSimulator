@@ -12,7 +12,7 @@ class Orbit
   }
   
   // constant orbital elements
-  float gravitationalConstant = 1.0f, mu, eccentricity, semiMajorAxis, semiLactusRectum;
+  float mu, eccentricity, semiMajorAxis, semiLactusRectum;
   PVector angularMomentum = new PVector();
   PVector eccentricityVector = new PVector();
   PVector initialSatelliteVelocity = new PVector();
@@ -21,7 +21,7 @@ class Orbit
 
   // changing orbital elements
   PVector radius = new PVector();
-  float trueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity;
+  float trueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity, period;
 
 
   void calculateInitialOrbitalElements()
@@ -80,7 +80,7 @@ class Orbit
   void update(float deltaTime, int iterations)
   {
     // calculate next meanAnomaly
-    meanAnomaly = (direction * deltaTime * sqrt(gravitationalConstant * (b1.mass + b2.mass) / pow(semiMajorAxis,3)) + meanAnomaly) % (2.0f * PI);
+    meanAnomaly = (direction * deltaTime * sqrt(mu / pow(semiMajorAxis,3)) + meanAnomaly) % (2.0f * PI);
   
     // use newton's method to solve for the eccentric anomaly at this time
     for(int i = 0; i < iterations; i++)
@@ -134,24 +134,6 @@ class Orbit
     System.out.println("Radial Velocity: " + radialVelocity);
     System.out.println("Satellite Velocity Vector: " + b2.velocity);
     System.out.println("Satellite Speed: " + b2.velocity.mag());
-  }
-  
-  void overlayOrbitInfo()
-  {
-    textSize(14);
-    text("mu: " + mu, width - width / 3, height / 16);
-    text("Radius: " + radius, width - width / 3, height / 16 * 2);
-    text("Angular Momentum: " + angularMomentum, width - width / 3, height / 16 * 3);
-    text("Eccentricity Vector: " + eccentricityVector, width - width / 3, height / 16 * 4);
-    text("Eccentricity: " + eccentricity, width - width / 3, height / 16 * 5);
-    text("Semi-Major Axis: " + semiMajorAxis, width - width / 3, height / 16 * 6);
-    text("Semi-Lactus Rectum: " + semiLactusRectum, width - width / 3, height / 16 * 7);
-    text("True Anomaly: " + trueAnomaly, width - width / 3, height / 16 * 8);
-    text("Mean Anomaly: " + meanAnomaly, width - width / 3, height / 16 * 9);
-    text("Eccentric Anomaly: " + eccentricAnomaly, width - width / 3, height / 16 * 10);
-    text("Radial Velocity: " + radialVelocity, width - width / 3, height / 16 * 11);
-    text("Satellite Velocity Vector: " + b2.velocity, width - width / 3, height / 16 * 12);
-    text("Satellite Speed: " + b2.velocity.mag(), width - width / 3, height / 16 * 13);
   }
   
   void draw()

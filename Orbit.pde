@@ -87,7 +87,7 @@ class Orbit
     {
       eccentricAnomaly = eccentricAnomaly - (eccentricAnomaly - eccentricity * sin (eccentricAnomaly) - meanAnomaly)
                            / (1 - eccentricity * cos(eccentricAnomaly));
-    }  
+    }
   
     // solve for the radius vector and update position
     trueAnomaly = 2.0f * atan2(sqrt(1 + eccentricity) * sin (eccentricAnomaly / 2.0f), sqrt(1 - eccentricity) * cos(eccentricAnomaly / 2.0f));
@@ -100,14 +100,22 @@ class Orbit
     radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin (trueAnomaly);
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
   
+    // get the speed form the tangential and radial components with respect to the radius vector
     float speed = sqrt(radialVelocity * radialVelocity + tangentialVelocity * tangentialVelocity);
-    b2.velocity.set(-direction * speed * sin(trueAnomaly - argumentOfPeriapsis), direction * speed * cos (trueAnomaly - argumentOfPeriapsis));
-  
-    eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
-    eccentricityVector.cross(angularMomentum, eccentricityVector);
-    eccentricityVector.div(mu);
-    temp.set(radius); temp.normalize();
-    eccentricityVector.sub(temp);
+    //float angle = atan2(radius.y, radius.x);
+    // get the velocity x/y components in the plane where the semi-major axis is the x axis
+    //b2.velocity.set(speed*cos(trueAnomaly - argumentOfPeriapsis), speed*sin(trueAnomaly - argumentOfPeriapsis));
+    //b2.velocity.set(10, 0);
+    //b2.velocity.rotate(trueAnomaly + argumentOfPeriapsis);
+   
+    // get the velocity components with respect to the semi-major axis
+    b2.velocity.set(radialVelocity * cos(trueAnomaly) - tangentialVelocity * sin (trueAnomaly),
+                   radialVelocity * sin(trueAnomaly) + tangentialVelocity * cos (trueAnomaly));
+    // apply a rotation to put it in the cartesian plane with respect to the top of the
+    // screen as the x-axis
+    b2.velocity.rotate(argumentOfPeriapsis);
+    // adjust the direction of the velocity vector for the given direction of revolution
+    b2.velocity.mult(direction);
   }
 
   void printOrbitalElements()
@@ -151,5 +159,10 @@ class Orbit
     plotOrbitalPath();
     b1.draw();
     b2.draw();
+    fill(255, 0, 255);
+    stroke(255, 0, 255);
+    line(b1.position.x, b1.position.y, b2.position.x, b2.position.y);
+    fill(0);
+    stroke(0);
   }
 }

@@ -40,26 +40,38 @@ void setup()
   // init controls
   cp5 = new ControlP5(this);
   
-  cp5.addSlider("b1Radius").setPosition(100, displayHeight/32 * 2).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64);
-  cp5.addSlider("b2Radius").setPosition(100, displayHeight/32 * 3).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64);
-  cp5.addSlider("b1Mass").setPosition(100, displayHeight/32 * 4).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64).setValue(b1.mass);
-  cp5.addSlider("b2Mass").setPosition(100, displayHeight/32 * 5).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64).setValue(b2.mass);
+  cp5.addSlider("b1Radius").setPosition(100, displayHeight/32 * 2).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64).setColorLabel(color(0,0,0));
+  cp5.addSlider("b2Radius").setPosition(100, displayHeight/32 * 3).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64).setColorLabel(color(0,0,0));
+  cp5.addSlider("b1Mass").setPosition(100, displayHeight/32 * 4).setRange(0, 50).setValue(5).setWidth(displayWidth/4).setHeight(displayHeight/64).setValue(b1.mass).setColorLabel(color(0,0,0));
+  cp5.addSlider("b2Mass")
+          .setPosition(100, displayHeight/32 * 5)
+          .setColorLabel(color(0,0,0))
+          .setRange(0, 50)
+          .setValue(5)
+          .setWidth(displayWidth/4)
+          .setHeight(displayHeight/64)
+          .setValue(b2.mass);
   
   b2Velocity = cp5.addSlider2D("b2Velocity")
          .setPosition(100,400)
          .setSize(100,100)
+         .setColorLabel(color(0,0,0))
+         .setColorValue(color(0,0,0))
          .setMinMax(-50,-50,50,50)
          .setValue(b2.velocity.x,b2.velocity.y);
          
   b2Position = cp5.addSlider2D("b2Position")
          .setPosition(300,400)
          .setSize(100,100)
+         .setColorLabel(color(0,0,0))
+         .setColorValue(color(0,0,0))
          .setMinMax(displayWidth / 4,displayHeight / 4,displayWidth * 3 / 4,displayHeight * 3 / 4)
          .setValue(b2.position.x,b2.position.y);
          
   cp5.addToggle("startStop")
      .setPosition(100,250)
      .setSize(50,20)
+     .setColorLabel(color(0,0,0))
      .setValue(false)
      .setMode(ControlP5.SWITCH)
      ;
@@ -67,6 +79,7 @@ void setup()
   cp5.addToggle("recalculate")
      .setPosition(300,250)
      .setSize(50,20)
+     .setColorLabel(color(0,0,0))
      .setValue(false)
      .setMode(ControlP5.SWITCH)
      ;
@@ -74,7 +87,7 @@ void setup()
 
 void draw()
 {
-  background(155);
+  background(255);
   
   if(startStop)
   {
@@ -96,11 +109,11 @@ void draw()
     orbit.draw();
   }
   
+  // update values that can be changed during simulation
   b1.radius = b1Radius;
   b2.radius = b2Radius;
   
  
-  
   // wait for next frame (lock 60fps)
   delay(12);
 }

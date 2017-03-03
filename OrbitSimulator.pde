@@ -52,7 +52,7 @@ void initSliders()
     .setRange(0, 50).setValue(5)
     .setWidth(displayWidth / 4)
     .setHeight(displayHeight / 64 * 3)
-    .setValue(gravitationalConstant)
+    .setValue(1.0f)
     .setColorLabel(color(0, 0, 0))
     .setFont(font)
     .setCaptionLabel("Gravitational Constant")
@@ -183,7 +183,6 @@ void draw()
   // refresh screen
   background(255);
 
-
   if (startStop) // run Simulation if applicable
   {
     orbit.draw();
@@ -208,6 +207,7 @@ void draw()
   b2.radius = b2Radius;
 
   // wait for next frame (lock 60fps)
+  stroke(0); fill(0);
   text("frameDelay: " + (System.currentTimeMillis() - frameTime) + " ms", displayWidth / 10 * 9, displayHeight / 32 * 31);
   frameTime = System.currentTimeMillis();
   //delay(12);

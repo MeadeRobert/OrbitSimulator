@@ -1,6 +1,5 @@
 class Orbit
-{
-  
+{  
   public Body b1, b2;
   
   public Orbit(Body b1, Body b2)
@@ -12,7 +11,7 @@ class Orbit
   }
   
   // constant orbital elements
-  float mu, eccentricity, semiMajorAxis, semiLactusRectum;
+  float mu, eccentricity, semiMajorAxis, semiLactusRectum, speed;
   PVector angularMomentum = new PVector();
   PVector eccentricityVector = new PVector();
   PVector initialSatelliteVelocity = new PVector();
@@ -68,51 +67,51 @@ class Orbit
 
   void plotOrbitalPath()
   {
+    // set drawing  params
     color(0); stroke(0);
+    // plot 360*8 points evenly spaced in angular terms
+    // for one revolution of the ellipse
+    float r, angle;
     for(int j = 0; j < 360*8; j++)
     {
-      float angle = (float) j / (16.0f * PI);
-      float r = semiLactusRectum / (1.0f + eccentricity * cos (angle - argumentOfPeriapsis));
+      angle = (float) j / (16.0f * PI);
+      r = semiLactusRectum / (1.0f + eccentricity * cos (angle - argumentOfPeriapsis));
       point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
     }
   }
 
   void update(float deltaTime, int iterations)
   {
-    // calculate next meanAnomaly
+    // calculate next meanAnomaly given the time step
     meanAnomaly = (direction * deltaTime * sqrt(mu / pow(semiMajorAxis,3)) + meanAnomaly) % (2.0f * PI);
   
-    // use newton's method to solve for the eccentric anomaly at this time
+    // use newton's method for the defined number of iterations to solve numerically for the eccentric anomaly
+    // there is no analytical solution
     for(int i = 0; i < iterations; i++)
     {
       eccentricAnomaly = eccentricAnomaly - (eccentricAnomaly - eccentricity * sin (eccentricAnomaly) - meanAnomaly)
                            / (1 - eccentricity * cos(eccentricAnomaly));
     }
   
-    // solve for the radius vector and update position
+    // solve for the new radius vector and update position
     trueAnomaly = 2.0f * atan2(sqrt(1 + eccentricity) * sin (eccentricAnomaly / 2.0f), sqrt(1 - eccentricity) * cos(eccentricAnomaly / 2.0f));
     float r = semiLactusRectum / (1.0f + eccentricity * cos (trueAnomaly));
     radius.set(r*cos(trueAnomaly + argumentOfPeriapsis), r*sin(trueAnomaly + argumentOfPeriapsis));
     b2.position.set(b1.position);
     b2.position.add(radius);
   
-    // update other orbital params
+    // update radial and tangential velocity
     radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin (trueAnomaly);
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos (trueAnomaly));
   
     // get the speed form the tangential and radial components with respect to the radius vector
-    float speed = sqrt(radialVelocity * radialVelocity + tangentialVelocity * tangentialVelocity);
-    //float angle = atan2(radius.y, radius.x);
-    // get the velocity x/y components in the plane where the semi-major axis is the x axis
-    //b2.velocity.set(speed*cos(trueAnomaly - argumentOfPeriapsis), speed*sin(trueAnomaly - argumentOfPeriapsis));
-    //b2.velocity.set(10, 0);
-    //b2.velocity.rotate(trueAnomaly + argumentOfPeriapsis);
-   
+    speed = sqrt(radialVelocity * radialVelocity + tangentialVelocity * tangentialVelocity);
+    
     // get the velocity components with respect to the semi-major axis
     b2.velocity.set(radialVelocity * cos(trueAnomaly) - tangentialVelocity * sin (trueAnomaly),
                    radialVelocity * sin(trueAnomaly) + tangentialVelocity * cos (trueAnomaly));
-    // apply a rotation to put it in the cartesian plane with respect to the top of the
-    // screen as the x-axis
+    // apply a rotation to put the velocity vector in the cartesian plane with respect to
+    // the top of the screen as the x-axis
     b2.velocity.rotate(argumentOfPeriapsis);
     // adjust the direction of the velocity vector for the given direction of revolution
     b2.velocity.mult(direction);
@@ -133,18 +132,16 @@ class Orbit
     System.out.println("Tangential Velocity: " + tangentialVelocity);
     System.out.println("Radial Velocity: " + radialVelocity);
     System.out.println("Satellite Velocity Vector: " + b2.velocity);
-    System.out.println("Satellite Speed: " + b2.velocity.mag());
+    System.out.println("Satellite Speed: " + speed);
   }
   
   void draw()
   {
     plotOrbitalPath();
-    b1.draw();
-    b2.draw();
-    fill(255, 0, 255);
-    stroke(255, 0, 255);
+    b1.draw(); b2.draw();
+    
+    // plot a radial line from the fixed body to the satellite
+    fill(255, 0, 255); stroke(255, 0, 255);
     line(b1.position.x, b1.position.y, b2.position.x, b2.position.y);
-    fill(0);
-    stroke(0);
   }
 }

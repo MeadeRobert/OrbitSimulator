@@ -25,6 +25,25 @@ int signum(float f) {
   return 0;
 } 
 
+// UI Controls
+// --------------------------------------------------------
+
+
+void initOverlay()
+{
+  textFont(font);
+}
+
+void initControls()
+{
+  Label.setUpperCaseDefault(false);
+  font = createFont("Arial", 16, true);
+  cp5 = new ControlP5(this);
+
+  initSliders();
+  initButtons();
+}
+
 void initSliders()
 {
   cp5.addSlider("b1Radius")
@@ -68,7 +87,7 @@ void initSliders()
     .setFont(font)
     .setCaptionLabel("Fixed Body Mass")
     ;
-    
+
   cp5.addSlider("timeStep")
     .setPosition(displayWidth / 16, displayHeight / 16 * 5)
     .setColorLabel(color(0, 0, 0))
@@ -80,7 +99,7 @@ void initSliders()
     .setFont(font)
     .setCaptionLabel("Time Step")
     ;
-    
+
   b2Velocity = cp5.addSlider2D("b2Velocity")
     .setCaptionLabel("Velocity")
     .setPosition(displayWidth / 8 - displayWidth / 16, displayHeight / 3 * 2)
@@ -127,22 +146,12 @@ void initButtons()
     ;
 }
 
-void initControls()
-{
-  Label.setUpperCaseDefault(false);
-  font = createFont("Arial", 16, true);
-  cp5 = new ControlP5(this);
-  
-  initSliders();
-  initButtons();
-}
-
 // ------------------------------------------------
 
 void setup()
 {
   orientation(LANDSCAPE);
-  
+
   // setup screen
   background(255);
   size(displayWidth, displayHeight, P2D);
@@ -170,11 +179,53 @@ void setup()
 
   // initialize ui
   initControls();
+  initOverlay();
 }
 
 void overlayOrbitData()
 {
-  
+  stroke(0); 
+  fill(0);
+  text("mu: " + orbit.mu, displayWidth / 4 * 3, displayHeight / 32 * 2);
+  text("Angular Momentum: " + (orbit.angularMomentum.mag() * orbit.direction), displayWidth / 4 * 3, displayHeight / 32 * 3);
+  text("Eccentricity: " + orbit.eccentricity, displayWidth / 4 * 3, displayHeight / 32 * 4);
+  text("Semi-Major Axis: " + orbit.semiMajorAxis, displayWidth / 4 * 3, displayHeight / 32 * 5);
+  text("Semi-Lactus Rectum: " + orbit.semiLactusRectum, displayWidth / 4 * 3, displayHeight / 32 * 6);
+  text("Argument of Periapsis: " + (orbit.argumentOfPeriapsis * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 7);
+  text("True Anomaly: " + (orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 8);
+  text("Eccentric Anomaly: " + (orbit.eccentricAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 9);
+  text("Mean Anomaly: " + (orbit.meanAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 10);
+   text("Orbital Radius: " + orbit.radius.mag(), displayWidth / 4 * 3, displayHeight / 32 * 11);
+  text("Satellite Speed: " + orbit.speed, displayWidth / 4 * 3, displayHeight / 32 * 12);
+}
+
+void overlayFrameDelay()
+{
+  stroke(0); 
+  fill(0);
+  text("frameDelay: " + (System.currentTimeMillis() - frameTime) + " ms", displayWidth / 4 * 3, displayHeight / 32 * 31);
+  frameTime = System.currentTimeMillis();
+}
+
+void updateRunTimeValues()
+{
+  b1.radius = b1Radius;
+  b2.radius = b2Radius;
+}
+
+void updateOrbitalStateValues()
+{
+  b1.mass = b1Mass * 1000;
+  b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
+  b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
+  if (recalculate) orbit.calculateInitialOrbitalElements();
+}
+
+void updateOrbit()
+{
+  orbit.update(timeStep, 5);
+  b2Position.setValue(b2.position.x, b2.position.y);
+  b2Velocity.setValue(b2.velocity.x, b2.velocity.y);
 }
 
 // run app
@@ -183,32 +234,17 @@ void draw()
   // refresh screen
   background(255);
 
-  if (startStop) // run Simulation if applicable
-  {
-    orbit.draw();
-    orbit.update(timeStep, 5);
-    b2Position.setValue(b2.position.x, b2.position.y);
-    b2Velocity.setValue(b2.velocity.x, b2.velocity.y);
-  } else // update values that cannot be changed while running
-  {
-    b1.mass = b1Mass * 1000;
-    b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
-    b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
-    if (recalculate) orbit.calculateInitialOrbitalElements();
+  // simulate or change the orbit
+  if (startStop) updateOrbit();
+  else updateOrbitalStateValues();
 
-    orbit.draw();
-  }
+  // draw the orbit
+  orbit.draw();
 
-  // overlay data
+  // overlay orbit info
   overlayOrbitData();
+  overlayFrameDelay();
 
-  // update values that can be changed during simulation
-  b1.radius = b1Radius;
-  b2.radius = b2Radius;
-
-  // wait for next frame (lock 60fps)
-  stroke(0); fill(0);
-  text("frameDelay: " + (System.currentTimeMillis() - frameTime) + " ms", displayWidth / 10 * 9, displayHeight / 32 * 31);
-  frameTime = System.currentTimeMillis();
-  //delay(12);
+  // update simulation run-time characteristics
+  updateRunTimeValues();
 }

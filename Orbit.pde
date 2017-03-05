@@ -1,14 +1,7 @@
 class Orbit
 {  
-  public Body b1, b2;
-  
-  public Orbit(Body b1, Body b2)
-  {
-    this.b1 = b1;
-    this.b2 = b2;
-    calculateInitialOrbitalElements();
-    printOrbitalElements();
-  }
+  Body b1, b2;
+  PGraphics orbitalPath;
   
   // constant orbital elements
   float mu, eccentricity, semiMajorAxis, semiLactusRectum, speed;
@@ -22,10 +15,18 @@ class Orbit
   PVector radius = new PVector();
   float trueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity, period;
 
+  public Orbit(Body b1, Body b2)
+  {
+    this.b1 = b1;
+    this.b2 = b2;
+    orbitalPath = createGraphics(displayWidth, displayHeight); 
+    calculateInitialOrbitalElements();
+    printOrbitalElements();
+  }
 
   void calculateInitialOrbitalElements()
   {
-    // Calculate orbital elements 
+    // calculate mu, radius, angularMomentum and direction of orbit
     mu = gravitationalConstant * b1.mass;
   
     radius.set(b2.position);
@@ -36,6 +37,7 @@ class Orbit
     
     direction = signum(angularMomentum.z);
   
+    // calculate eccentricity
     eccentricityVector = new PVector(); eccentricityVector.set(b2.velocity);
     eccentricityVector.cross(angularMomentum, eccentricityVector);
     eccentricityVector.div(mu);
@@ -44,13 +46,21 @@ class Orbit
   
     eccentricity = eccentricityVector.mag();
     
+    // calculate semi-major axis and semi-lactus rectum for the orbit
+    // a = H^2 / (mu * (1 - e)
     semiMajorAxis = angularMomentum.mag() * angularMomentum.mag() / (mu * (1 - eccentricity * eccentricity));
   
+    // p = a * (1 - e^2)
     semiLactusRectum = semiMajorAxis * (1 - eccentricity*eccentricity);
   
+    // calculate angular displacement from x/y plane where top of screen is x-axis
+    // tan (omega) = e.y / e.x
     argumentOfPeriapsis = atan2(eccentricityVector.y, eccentricityVector.x);
     
+    // calculate angular anomalies
+    // cos (true anomaly) = (R dot E) / (r*e) 
     trueAnomaly = signum(eccentricityVector.cross(radius).z) * acos(radius.dot(eccentricityVector)/(radius.mag() * eccentricity));
+    
     
     eccentricAnomaly = atan2(sqrt(1 - eccentricity*eccentricity) * sin(trueAnomaly), (eccentricity + cos(trueAnomaly)));
     initialEccentricAnomaly = eccentricAnomaly;
@@ -58,26 +68,32 @@ class Orbit
     meanAnomaly = eccentricAnomaly - eccentricity * sin(eccentricAnomaly);
     initialMeanAnomaly = meanAnomaly;
   
+    // calculate radial and tangential velocities
     radialVelocity = sqrt(mu/semiLactusRectum) * eccentricity * sin(trueAnomaly);
     initialRadialVelocity = radialVelocity;
   
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly));
     initialTangentialVelocity = tangentialVelocity; 
+    
+    generateOrbitalPath();
   }
 
-  void plotOrbitalPath()
+  void generateOrbitalPath()
   {
     // set drawing  params
     color(0); stroke(0);
     // plot 360*8 points evenly spaced in angular terms
     // for one revolution of the ellipse
     float r, angle;
+    orbitalPath.beginDraw();
+    orbitalPath.background(255);
     for(int j = 0; j < 360*8; j++)
     {
       angle = (float) j / (16.0f * PI);
       r = semiLactusRectum / (1.0f + eccentricity * cos (angle - argumentOfPeriapsis));
-      point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
+      orbitalPath.point(r * cos(angle) + b1.position.x, r * sin(angle) + b1.position.y);
     }
+    orbitalPath.endDraw();
   }
 
   void update(float deltaTime, int iterations)
@@ -137,7 +153,7 @@ class Orbit
   
   void draw()
   {
-    plotOrbitalPath();
+    image(orbitalPath, 0, 0);
     b1.draw(); b2.draw();
     
     // plot a radial line from the fixed body to the satellite

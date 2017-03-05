@@ -15,16 +15,17 @@ class UI
     stroke(0); 
     fill(0);
     text("mu: " + orbit.mu, displayWidth / 4 * 3, displayHeight / 32 * 2);
-    text("Angular Momentum: " + (orbit.angularMomentum.mag() * orbit.direction), displayWidth / 4 * 3, displayHeight / 32 * 3);
+    text("Angular Momentum: " + (-orbit.angularMomentum.mag() * orbit.direction), displayWidth / 4 * 3, displayHeight / 32 * 3);
     text("Eccentricity: " + orbit.eccentricity, displayWidth / 4 * 3, displayHeight / 32 * 4);
     text("Semi-Major Axis: " + orbit.semiMajorAxis, displayWidth / 4 * 3, displayHeight / 32 * 5);
     text("Semi-Lactus Rectum: " + orbit.semiLactusRectum, displayWidth / 4 * 3, displayHeight / 32 * 6);
-    text("Argument of Periapsis: " + (orbit.argumentOfPeriapsis * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 7);
-    text("True Anomaly: " + (orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 8);
-    text("Eccentric Anomaly: " + (orbit.eccentricAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 9);
-    text("Mean Anomaly: " + (orbit.meanAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 10);
-    text("Orbital Radius: " + orbit.radius.mag(), displayWidth / 4 * 3, displayHeight / 32 * 11);
-    text("Satellite Speed: " + orbit.speed, displayWidth / 4 * 3, displayHeight / 32 * 12);
+    text("Argument of Periapsis: " + (-orbit.argumentOfPeriapsis * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 7);
+    text("Orbital Period: " + orbit.period, displayWidth / 4 * 3, displayHeight / 32 * 8);
+    text("True Anomaly: " + (-orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 9);
+    text("Eccentric Anomaly: " + (-orbit.eccentricAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 10);
+    text("Mean Anomaly: " + (-orbit.meanAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 11);
+    text("Orbital Radius: " + orbit.radius.mag(), displayWidth / 4 * 3, displayHeight / 32 * 12);
+    text("Satellite Speed: " + orbit.speed, displayWidth / 4 * 3, displayHeight / 32 * 13);
   }
   
   void initOverlay()
@@ -102,7 +103,7 @@ void initControls()
       .setColorLabel(color(0, 0, 0))
       .setColorValue(color(0, 0, 0))
       .setMinMax(-50, -50, 50, 50)
-      .setValue(b2.velocity.x, b2.velocity.y)
+      .setValue(b2.velocity.x, -b2.velocity.y)
       .setFont(font)
       ;
   
@@ -144,7 +145,7 @@ void initControls()
   void overlayFrameDelay()
   {
     stroke(0); fill(0);
-    text("frameDelay: " + (System.currentTimeMillis() - frameTime) + " ms", displayWidth / 4 * 3, displayHeight / 32 * 31);
+    text("FPS: " + (int) (1000f / (System.currentTimeMillis() - frameTime)), displayWidth / 4 * 3, displayHeight / 32 * 31);
     frameTime = System.currentTimeMillis();
   }
   

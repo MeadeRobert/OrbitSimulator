@@ -4,7 +4,7 @@ class Orbit
   PGraphics orbitalPath;
   
   // constant orbital elements
-  float mu, eccentricity, semiMajorAxis, semiLactusRectum, speed;
+  float mu, eccentricity, semiMajorAxis, semiLactusRectum, speed, period;
   PVector angularMomentum = new PVector();
   PVector eccentricityVector = new PVector();
   PVector initialSatelliteVelocity = new PVector();
@@ -13,7 +13,7 @@ class Orbit
 
   // changing orbital elements
   PVector radius = new PVector();
-  float trueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity, period;
+  float trueAnomaly, eccentricAnomaly, meanAnomaly, tangentialVelocity, radialVelocity;
 
   public Orbit(Body b1, Body b2)
   {
@@ -74,6 +74,9 @@ class Orbit
   
     tangentialVelocity = sqrt(mu/semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly));
     initialTangentialVelocity = tangentialVelocity; 
+    
+    // calculate orbital period
+    period = sqrt((4.0f * PI * PI * pow(semiMajorAxis, 3) / mu));
     
     generateOrbitalPath();
   }

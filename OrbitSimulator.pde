@@ -78,6 +78,7 @@ void draw()
 
   // update simulation run-time characteristics
   updateRunTimeValues();
+  correctSliderDisplayValues();
 }
 
 void updateRunTimeValues()
@@ -92,6 +93,18 @@ void updateOrbitalStateValues()
   b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
   b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
   if (recalculate) orbit.calculateInitialOrbitalElements();
+  
+}
+
+void correctSliderDisplayValues()
+{
+  b2Position.setValueLabel("" + (int) b2.position.x + ", " + (displayHeight - (int) b2.position.y));
+  b2Velocity.setValueLabel("" + (int) b2.velocity.x + ", " + (int) -b2.velocity.y);
+}
+
+void controlEvent(ControlEvent e)
+{
+  correctSliderDisplayValues();
 }
   
 void updateOrbit()

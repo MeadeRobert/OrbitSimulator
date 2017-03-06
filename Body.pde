@@ -48,14 +48,4 @@ class Body
     velocity.add(acceleration);
     acceleration = new PVector(0,0);
   }
-  
-  public PVector gravitationalForceFrom(Body other)
-  {
-    PVector unitDirection = other.position;
-    unitDirection.sub(this.position);
-    float dist = unitDirection.mag();
-    unitDirection.normalize();
-    unitDirection.mult((mass*other.mass*gravitationalConstant)/(dist*dist));
-    return unitDirection;
-  }
 }

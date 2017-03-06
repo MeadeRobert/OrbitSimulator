@@ -10,7 +10,7 @@ class UI
   public UI()
   {
     startTime = System.currentTimeMillis();
-    constantOrbitData = createGraphics(displayWidth, displayHeight);
+    constantOrbitData = createGraphics(displayWidth, displayHeight, P2D);
     generateConstantOrbitData();
     initControls();
     initOverlay();

@@ -160,7 +160,7 @@ class Orbit
     b1.draw(); b2.draw();
     
     // plot a radial line from the fixed body to the satellite
-    fill(255, 0, 255); stroke(255, 0, 255);
+    fill(255, 0, 255); stroke(255, 0, 255); strokeWeight(2);
     line(b1.position.x, b1.position.y, b2.position.x, b2.position.y);
   }
 }

@@ -1,38 +1,33 @@
 import processing.core.*;
 import controlP5.*;
 
+// global variables
+// ------------------------------------------------------------------
+
 float gravitationalConstant = 1.0f, timeStep = .1f, b1Mass = 50000f;
+int b1Radius, b2Radius;
 boolean startStop = false, recalculate = false;
 PFont font;
-long frameTime;
-int b1Radius = 0, b2Radius = 0;;
-PVector temp = new PVector();
 
+PVector temp = new PVector();
+Slider2D b2Velocity, b2Position;
 ControlP5 cp5;
 Body b1, b2;
 Orbit orbit;
-Slider2D b2Velocity, b2Position;
 UI ui;
 
 
-// --------------------------------
-
-int signum(float f) {
-  if (f > 0) return 1;
-  if (f < 0) return -1;
-  return 0;
-} 
-
-// --------------------------------
+// App Core 
+// --------------------------------------------------------------------------
 
 void setup()
 {
-  // setup screen
+  // setup screen and graphics
   orientation(LANDSCAPE);
   background(255);
   fullScreen(P2D, 1);
+  smooth(0);
   
-
   // create orbital bodies
   b1 = new Body(new PVector(.5f * displayWidth, .5f * displayHeight), 
     new PVector(0, 0, 0), 
@@ -57,8 +52,8 @@ void setup()
   // initialize ui
   cp5 = new ControlP5(this);
   Label.setUpperCaseDefault(false);
-  font = createFont("Arial", 16, true);
-  ui = new UI(cp5);
+  font = createFont("Arial", 18, true);
+  ui = new UI();
 }
 
 // run app
@@ -79,33 +74,38 @@ void draw()
 
   // update simulation run-time characteristics
   updateRunTimeValues();
-  correctSliderDisplayValues();
 }
+
+void controlEvent(ControlEvent e)
+{
+    if(ui != null) ui.correctSliderDisplayValues();
+}
+
+// Helper Methods
+// ---------------------------------------------------
+
+int signum(float f) {
+  if (f > 0) return 1;
+  if (f < 0) return -1;
+  return 0;
+} 
 
 void updateRunTimeValues()
 {
   b1.radius = b1Radius;
   b2.radius = b2Radius;
 }
-  
+
 void updateOrbitalStateValues()
 {
   b1.mass = b1Mass * 1000;
   b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
   b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
-  if (recalculate) orbit.calculateInitialOrbitalElements();
-  
-}
-
-void correctSliderDisplayValues()
-{
-  b2Position.setValueLabel("" + (int) b2.position.x + ", " + (displayHeight - (int) b2.position.y));
-  b2Velocity.setValueLabel("" + (int) b2.velocity.x + ", " + (int) -b2.velocity.y);
-}
-
-void controlEvent(ControlEvent e)
-{
-  correctSliderDisplayValues();
+  if (recalculate) 
+  {
+    orbit.calculateInitialOrbitalElements();
+    ui.generateConstantOrbitData();
+  }
 }
   
 void updateOrbit()

@@ -24,7 +24,6 @@ class UI
     constantOrbitData = createGraphics(displayWidth, displayHeight, P2D);
     constantOrbitData.beginDraw();
     constantOrbitData.textFont(font);
-    constantOrbitData.strokeWeight(2); constantOrbitData.stroke(0);
     
     constantOrbitData.fill(0);
     constantOrbitData.text("mu: " + orbit.mu, displayWidth / 4 * 3, displayHeight / 32 * 2);
@@ -47,7 +46,6 @@ class UI
   void overlayOrbitData()
   {
     image(constantOrbitData, 0, 0);
-    
     fill(0, 155, 91);
     text("True Anomaly: " + (-orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 12);
     fill(0);

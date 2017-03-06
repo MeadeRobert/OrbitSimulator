@@ -27,9 +27,9 @@ class Body
   {
     fill(fill[0], fill[1], fill[2]);
     stroke(stroke[0], stroke[1], stroke[2]);
+    strokeWeight(1);
     ellipse(position.x, position.y, radius*2.0f, radius*2.0f);
-    fill(255, 255, 0);
-    stroke(255, 255, 0);
+    stroke(0, 0, 255); strokeWeight(2);
     line(position.x, position.y, position.x + velocity.x, position.y + velocity.y);
   }
   
@@ -47,15 +47,5 @@ class Body
     //zero acc for next tick
     velocity.add(acceleration);
     acceleration = new PVector(0,0);
-  }
-  
-  public PVector gravitationalForceFrom(Body other)
-  {
-    PVector unitDirection = other.position;
-    unitDirection.sub(this.position);
-    float dist = unitDirection.mag();
-    unitDirection.normalize();
-    unitDirection.mult((mass*other.mass*gravitationalConstant)/(dist*dist));
-    return unitDirection;
   }
 }

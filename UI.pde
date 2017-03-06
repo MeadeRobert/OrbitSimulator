@@ -1,31 +1,66 @@
 class UI
 {
   long startTime, time;
+  PGraphics constantOrbitData;
   int frames;
+  
+  // Constructors
+  // ------------------------------------------------------
   
   public UI()
   {
     startTime = System.currentTimeMillis();
+    constantOrbitData = createGraphics(displayWidth, displayHeight);
+    generateConstantOrbitData();
     initControls();
     initOverlay();
   }
   
+  // Methods
+  // ------------------------------------------------------
+  
+  void generateConstantOrbitData()
+  {
+    constantOrbitData = createGraphics(displayWidth, displayHeight, P2D);
+    constantOrbitData.beginDraw();
+    constantOrbitData.textFont(font);
+    constantOrbitData.strokeWeight(2); constantOrbitData.stroke(0);
+    
+    constantOrbitData.fill(0);
+    constantOrbitData.text("mu: " + orbit.mu, displayWidth / 4 * 3, displayHeight / 32 * 2);
+    constantOrbitData.text("Angular Momentum: " + (-orbit.angularMomentum.mag() * orbit.direction), displayWidth / 4 * 3, displayHeight / 32 * 3);
+    constantOrbitData.text("Eccentricity: " + orbit.eccentricity, displayWidth / 4 * 3, displayHeight / 32 * 4);
+    
+    constantOrbitData.fill(255, 0, 0);
+    constantOrbitData.text("Semi-Major Axis: " + orbit.semiMajorAxis, displayWidth / 4 * 3, displayHeight / 32 * 5);
+    constantOrbitData.fill(0);
+    
+    constantOrbitData.text("Semi-Minor Axis: " + orbit.semiMinorAxis, displayWidth / 4 * 3, displayHeight / 32 * 6);
+    constantOrbitData.text("Semi-Lactus Rectum: " + orbit.semiLactusRectum, displayWidth / 4 * 3, displayHeight / 32 * 7);
+    constantOrbitData.text("Periapsis: " + orbit.periapsis, displayWidth / 4 * 3, displayHeight / 32 * 8);
+    constantOrbitData.text("Apoapsis: " + orbit.apoapsis, displayWidth / 4 * 3, displayHeight / 32 * 9);
+    constantOrbitData.text("Argument of Periapsis: " + (-orbit.argumentOfPeriapsis * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 10);
+    constantOrbitData.text("Orbital Period: " + orbit.period, displayWidth / 4 * 3, displayHeight / 32 * 11);
+    constantOrbitData.endDraw();
+  }
+  
   void overlayOrbitData()
   {
-    stroke(0); 
+    image(constantOrbitData, 0, 0);
+    
+    fill(0, 155, 91);
+    text("True Anomaly: " + (-orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 12);
     fill(0);
-    text("mu: " + orbit.mu, displayWidth / 4 * 3, displayHeight / 32 * 2);
-    text("Angular Momentum: " + (-orbit.angularMomentum.mag() * orbit.direction), displayWidth / 4 * 3, displayHeight / 32 * 3);
-    text("Eccentricity: " + orbit.eccentricity, displayWidth / 4 * 3, displayHeight / 32 * 4);
-    text("Semi-Major Axis: " + orbit.semiMajorAxis, displayWidth / 4 * 3, displayHeight / 32 * 5);
-    text("Semi-Lactus Rectum: " + orbit.semiLactusRectum, displayWidth / 4 * 3, displayHeight / 32 * 6);
-    text("Argument of Periapsis: " + (-orbit.argumentOfPeriapsis * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 7);
-    text("Orbital Period: " + orbit.period, displayWidth / 4 * 3, displayHeight / 32 * 8);
-    text("True Anomaly: " + (-orbit.trueAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 9);
-    text("Eccentric Anomaly: " + (-orbit.eccentricAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 10);
-    text("Mean Anomaly: " + (-orbit.meanAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 11);
-    text("Orbital Radius: " + orbit.radius.mag(), displayWidth / 4 * 3, displayHeight / 32 * 12);
-    text("Satellite Speed: " + orbit.speed, displayWidth / 4 * 3, displayHeight / 32 * 13);
+    
+    text("Eccentric Anomaly: " + (-orbit.eccentricAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 13);
+    text("Mean Anomaly: " + (-orbit.meanAnomaly * 180f / PI) + "\u00b0", displayWidth / 4 * 3, displayHeight / 32 * 14);
+    
+    fill(255, 0, 255);
+    text("Orbital Radius: " + orbit.radius.mag(), displayWidth / 4 * 3, displayHeight / 32 * 15);
+    fill(0);
+    
+    fill(0, 0, 255);
+    text("Satellite Speed: " + orbit.speed, displayWidth / 4 * 3, displayHeight / 32 * 16);
   }
   
   void initOverlay()

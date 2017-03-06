@@ -5,14 +5,13 @@ import controlP5.*;
 // ------------------------------------------------------------------
 
 float gravitationalConstant = 1.0f, timeStep = .1f, b1Mass = 50000f;
+int b1Radius, b2Radius;
 boolean startStop = false, recalculate = false;
 PFont font;
 
-Slider2D b2Velocity, b2Position;
-int b1Radius, b2Radius;
-ControlP5 cp5;
-
 PVector temp = new PVector();
+Slider2D b2Velocity, b2Position;
+ControlP5 cp5;
 Body b1, b2;
 Orbit orbit;
 UI ui;
@@ -23,10 +22,11 @@ UI ui;
 
 void setup()
 {
-  // setup screen
+  // setup screen and graphics
   orientation(LANDSCAPE);
   background(255);
   fullScreen(P2D, 1);
+  smooth(0);
   
   // create orbital bodies
   b1 = new Body(new PVector(.5f * displayWidth, .5f * displayHeight), 
@@ -52,7 +52,7 @@ void setup()
   // initialize ui
   cp5 = new ControlP5(this);
   Label.setUpperCaseDefault(false);
-  font = createFont("Arial", 16, true);
+  font = createFont("Arial", 18, true);
   ui = new UI();
 }
 
@@ -101,7 +101,11 @@ void updateOrbitalStateValues()
   b1.mass = b1Mass * 1000;
   b2.position.set(b2Position.getArrayValue()[0], b2Position.getArrayValue()[1]);
   b2.velocity.set(b2Velocity.getArrayValue()[0], b2Velocity.getArrayValue()[1]);
-  if (recalculate) orbit.calculateInitialOrbitalElements();
+  if (recalculate) 
+  {
+    orbit.calculateInitialOrbitalElements();
+    ui.generateConstantOrbitData();
+  }
 }
   
 void updateOrbit()

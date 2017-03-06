@@ -30,7 +30,8 @@ void setup()
   // setup screen
   orientation(LANDSCAPE);
   background(255);
-  size(displayWidth, displayHeight, P2D);
+  fullScreen(P2D, 1);
+  
 
   // create orbital bodies
   b1 = new Body(new PVector(.5f * displayWidth, .5f * displayHeight), 

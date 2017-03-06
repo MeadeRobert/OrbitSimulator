@@ -6,8 +6,10 @@
 class Orbit
 {
 
-  /** The b 2. */
-  Body b1, b2;
+  /** The fixed body */
+  Body b1;
+  /** The satellite body */
+  Body b2;
 
   /** The orbital path. */
   PGraphics orbitalPath;

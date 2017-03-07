@@ -18,7 +18,7 @@ KeplerOrbitSimulator2D Performs simulates the orbit under the following schema:
 4. set recalculate to false (this is not necessary but recommended)  
 5. set start/stop to true to run the simulation
 
-### Adujusting run-time values (time step and radii):
+### Adjusting run-time values (time step and radii):
 1. Simply drag the sliders for these values left or right to alter their values; changes will take effect immediately
 
 ### Notes:

@@ -28,6 +28,6 @@ KeplerOrbitSimulator2D Performs simulates the orbit under the following schema:
 ![Screenshot](https://github.com/MeadeRobert/OrbitSimulator/blob/master/screenshots/Screenshot%20from%202017-03-06%2019:00:45.png)  
 
 ## Javadoc  
-[rjm27trekkie.chickenkiller.com/OrbitSimulator/doc](rjm27trekkie.chickenkiller.com/OrbitSimulator/doc)
+[http://rjm27trekkie.chickenkiller.com/OrbitSimulator/doc](http://rjm27trekkie.chickenkiller.com/OrbitSimulator/doc)
 
 

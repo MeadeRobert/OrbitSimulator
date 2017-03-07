@@ -1,0 +1,17 @@
+generateConstantOrbitData():
+  write constant orbital values as text to an image
+
+overlayOrbitData():
+  overlay the image for the constant values
+  write other changing params to data overlay
+
+void initControls():
+  initialize sliders and buttons
+
+void overlayFPS():
+  calculate an average of the fps from the frame times for as many as the past 50 frames; discard half of this data when 50 frames are aquired, keeping the latest 25 frames
+  write this fps data to the screen
+
+void draw():
+  overlay fps and orbit data
+  correct 2d slider values to invert y values (such that bottom of screen is x axis)

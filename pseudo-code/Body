@@ -1,0 +1,18 @@
+Body(PVector position, PVector velocity, PVector acceleration, float mass, float radius, int[] fill,
+      int[] stroke):
+  initialize body with given initial conditions
+
+applyForce(PVector force):
+  add force / mass to acceleration
+
+update():
+  update velocity using euler's method
+  velocity += acceleration * time
+  use improved euler's method to update position
+  position += averagespeed * time (avg computed using previous and new speed)
+  zero acceleration
+
+draw():
+ draw the body to the screen as an circle
+ draw the body's velocity vector originating from its geometric center
+  

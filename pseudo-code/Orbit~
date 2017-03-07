@@ -1,0 +1,56 @@
+
+Orbit(Body b1, Body b2):
+  construct an orbit from bodies b1 and b2
+
+calculateInitialOrbitalElements():
+  calculate the following:
+    // mu, radius, relative specific angular momentum, angular direction
+
+    mu = M * G
+    radius = b2.position - b1.position
+    angularMomentum = radius cross b2.velocity (specific relative =>  ignore mass)
+    direction = sign(angularMomentum.z)
+
+    // eccentricityVector, eccentricity
+    eccentricityVector = (angularMomentum cross eccentricityVector) / mu - norm(radius)
+    eccentricityVector = abs(eccentricityVector)
+
+    // semi-major axis, semi-minor axis, semi-lactus rectum, periapsis, apoapsis
+    semiMajorAxis = abs(angularMomentum)^2 / (mu * (1 - eccentricity^2)
+    semiLactusRectum = semiMajorAxis * (1 - eccentricity ^ 2)
+    semiMinorAxis = semiMajorAxis * sqrt(1 - eccentricity^2)
+    periapsis = semiMajorAxis * (1 - eccentricity)
+    apoapsis = 2 * semiMajorAxis - periapsis
+
+    // angles: argument of periapsis, true anomaly, eccentric anomaly, mena anomaly
+    argumentOfPeriapasis = atan2(eccentricity.y, eccentricity.x)
+    trueAnomaly = sign((eccentricityVector cross radius).z) * acos((radius dot eccentricityVector) / (abs(radius) * eccentricity))
+    eccentricAnomaly = atan2(sqrt(1 - eccentricity^2) * sin(trueAnomaly), eccentricity + cos(trueAnomaly))
+    meanAnomaly = eccentricAnomaly - eccentricity * sin(eccentricAnomaly)
+
+    // radial and tangential velocity, orbital period
+    radialVelocity = sqrt(mu / semiLactusRectum) * eccentricity * sin(trueAnomaly)
+    tangentialVelocity = sqrt(mu / semiLactusRectum) * (1 + eccentricity * cos(trueAnomaly))
+    period = sqrt((4.0f * PI^2 * pow(semiMajorAxis, 3) / mu))
+    
+    generate the orbital path and semi-major axis as an image
+
+update(timeStep, iterations):
+  calculate the meanAnomaly at a time timeStep into the future as
+  meanAnomaly = t * sqrt(mu / (a^3)
+
+generateOrbitalPath():
+  plot 360*8 points spaced evenly from 0 to 2pi a distance r as a function of the true anomaly away from the fixed body to an image
+  draw the semi major axis to this image
+
+draw()
+  draw the orbital path and semi-major axis from the pre-made image
+  draw a circle arc with a radius of half the periapsis representative of the true anomaly about the fixed body
+
+
+
+
+
+    
+
+    

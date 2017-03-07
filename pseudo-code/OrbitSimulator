@@ -1,0 +1,24 @@
+import processing and controlP5 libraries
+
+initialize global variables
+
+setup():
+  set orientation, screen size and renderer
+
+  initialize orbital bodies
+  create orbit with given bodies
+
+  initialize ui and text elements
+
+draw():
+  refresh screen
+
+  simulate or update orbit depending
+  on startStop state
+
+  draw orbit, ui
+  update run-time values
+
+controlEvent(ControlEvent e):
+  override event management for slider updates
+  correct y values for position and velocity 2d sliders

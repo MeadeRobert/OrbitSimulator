@@ -25,7 +25,7 @@ KeplerOrbitSimulator2D Performs simulates the orbit under the following schema:
 * Buttons are in the true state when light blue is towards the left  
 * Under the hood, the y axis and positive angular direction are inverted
 
-![Screenshot](https://github.com/MeadeRobert/OrbitSimulator/blob/master/screenshots/Screenshot%20from%202017-03-06%2019:00:45.png)  
+![Screenshot](https://github.com/MeadeRobert/OrbitSimulator/blob/master/images/1945_3_6_17.PNG)  
 
 ## Javadoc  
 [http://rjm27trekkie.chickenkiller.com/OrbitSimulator/doc](http://rjm27trekkie.chickenkiller.com/OrbitSimulator/doc)

@@ -1,7 +1,7 @@
 # KeplerOrbitSimulator2D
 A 2-Dimensional Kepler orbit simulator that allows uses to input orbital state vectors and relevant constants that define an orbit about a central fixed body, neglecting the mass of the satellite
 
-KeplerOrbitSimulator2D Performs simulates the orbit under the following schema:  
+KeplerOrbitSimulator2D simulates a Kepler Orbit under the following schema:  
 
 * calculates elements of a kepler orbit including eccentricity, true anomaly, etc.
 * constructs a kepler orbit as a polar function of the true anomaly

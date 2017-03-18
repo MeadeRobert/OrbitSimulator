@@ -123,7 +123,7 @@ class Orbit
 
     // calculate semi-major axis, semi-minor axis, periapsis, apoapsis,
     // and semi-lactus rectum for the orbit
-    semiMajorAxis = angularMomentum.mag() * angularMomentum.mag() / (mu * (1 - eccentricity * eccentricity));
+    semiMajorAxis = angularMomentum.magSq() / (mu * (1 - eccentricity * eccentricity));
     semiLactusRectum = semiMajorAxis * (1 - eccentricity * eccentricity);
     semiMinorAxis = semiMajorAxis * sqrt((1 - eccentricity * eccentricity));
     periapsis = semiMajorAxis * (1 - eccentricity);
